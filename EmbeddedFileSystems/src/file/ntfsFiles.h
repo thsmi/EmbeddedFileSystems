@@ -51,7 +51,8 @@
    */
   typedef diskReturn_t (*ntfsNextFileCallback_t)(ntfsFileReference_t mftReference, const ntfsAttrFileName_t* file, uint8_t* data);
 
-  diskReturn_t ntfsListFiles(const ntfsVolume_t* volume, const ntfsFileHandle_t* file, diskBuffer_t* buffer, ntfsNextFileCallback_t callback, uint8_t* data);
+  diskReturn_t ntfsListFiles(const ntfsVolume_t* volume, const ntfsFileHandle_t* file,
+      diskBuffer_t* mftBuffer, diskBuffer_t* idxBuffer, ntfsNextFileCallback_t callback, uint8_t* data);
 
   /**
    *

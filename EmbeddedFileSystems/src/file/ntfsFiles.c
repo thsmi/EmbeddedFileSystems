@@ -23,26 +23,11 @@ static inline diskReturn_t ntfsListIndexEntries(
   return DISK_SUCCESS;
 }
 
-static diskReturn_t ntfsReadIndexFile(
-    diskDevice_t* device, ntfsNextFileCallback_t callback, uint8_t* data)
-{
-  ntfsIndexRecord_t* record = NULL;
-
-  // index files are always 1 Cluster in size, which is usually 4K. Their size is defined in the MBR
-  uint8_t buff[NTFS_BYTES_PER_SECTOR*8];
-  diskBuffer_t buffer;
-
-  diskInitBuffer(&buffer,&buff[0],sizeof(buff));
-
-  ntfsReadIndexRecord(device, &buffer,&record);
-  ntfsListIndexEntries(&(record->nodeInfo), callback,data);
-
-  return DISK_SUCCESS;
-}
 
 static diskReturn_t ntfsListNonResidentIndexEntries(
     const ntfsVolume_t* volume,
     const ntfsFileRecord_t* record, ntfsAttrHdr_t* header,
+    diskBuffer_t* buffer,
     ntfsNextFileCallback_t callback, uint8_t* data)
 {
   // Helpers, compiler should optimize them out.
@@ -76,7 +61,13 @@ static diskReturn_t ntfsListNonResidentIndexEntries(
     volumeSeekCluster(volume,offset,method);
 
     while (length--)
-      ntfsReadIndexFile(device, callback, data);
+    {
+      ntfsIndexRecord_t* idxRecord = NULL;
+
+      // index files are always 1 Cluster in size, which is usually 4K. Their size is defined in the MBR
+      ntfsReadIndexRecord(device, buffer,&idxRecord);
+      ntfsListIndexEntries(&(idxRecord->nodeInfo), callback, data);
+    }
 
     diskSeekRecordEx(device,pos,DISK_SEEK_ABSOLUTE,0);
   }
@@ -86,8 +77,8 @@ static diskReturn_t ntfsListNonResidentIndexEntries(
 }
 
 diskReturn_t ntfsListFiles(
-    const ntfsVolume_t* volume, const ntfsFileHandle_t* file, diskBuffer_t* buffer,
-    ntfsNextFileCallback_t callback, uint8_t* data)
+    const ntfsVolume_t* volume, const ntfsFileHandle_t* file, diskBuffer_t* mftBuffer,
+    diskBuffer_t* idxBuffer, ntfsNextFileCallback_t callback, uint8_t* data)
 {
 
   // Helpers, compiler should optimize them out.
@@ -112,7 +103,7 @@ diskReturn_t ntfsListFiles(
 
   diskSeekRecord(device,sector);
 
-  ntfsReadFileRecord(device, buffer,&record);
+  ntfsReadFileRecord(device, mftBuffer,&record);
 
   // Header IDs are in ascending order...
   if (ntfsFindAttr(record, &header,NTFS_ATTR_FILE_NAME) != DISK_SUCCESS)
@@ -140,7 +131,7 @@ diskReturn_t ntfsListFiles(
 
   // check if we have a data run
   if (indexRoot->nodeInfo.flags == 0x01)
-    return ntfsListNonResidentIndexEntries(volume,record,header,callback,data);
+    return ntfsListNonResidentIndexEntries(volume,record,header,idxBuffer,callback,data);
 
   ntfsDebug(L"Index stored resident\n");
   
@@ -279,14 +270,14 @@ static diskReturn_t ntfsReadNonResidentData(
      worker.sizeInSectors -= runLength;
    }
 
-   // TODO reurn num read...
+   // TODO return num read...
 
    return DISK_SUCCESS;
 }
 
 diskReturn_t ntfsReadFile(
-    const ntfsVolume_t* volume, const ntfsFileHandle_t* file,  diskBuffer_t* buffer,
-    diskBuffer_t* buffer2, uint64_t length, uint64_t offset)
+    const ntfsVolume_t* volume, const ntfsFileHandle_t* file,  diskBuffer_t* mftBuffer,
+    diskBuffer_t* fileBuffer, uint64_t length, uint64_t offset)
 {
   // Helpers, compiler should optimize them out.
   diskDevice_t* device = volume->partition->device;
@@ -304,11 +295,11 @@ diskReturn_t ntfsReadFile(
   sectors = ((((uint64_t)file->mftRecord.SegmentNumberHighPart) << 32)+(file->mftRecord.SegmentNumberLowPart))*NTFS_SECTORS_PER_FILERECORD;
   diskSeekRecord(device,sectors);
 
-  if (ntfsReadFileRecord(device, buffer,&record) != DISK_SUCCESS)
+  if (ntfsReadFileRecord(device, mftBuffer,&record) != DISK_SUCCESS)
     return DISK_ERROR;
 
-  // NTFS supports alternative datastream, this means there might be more than one $data entry...
-  // ... alternative Datastreams are named, while the "main" entry is usually unnamed.
+  // NTFS supports alternative data stream, this means there might be more than one $data entry...
+  // ... alternative Data streams are named, while the "main" entry is usually unnamed.
   while (ntfsFindAttr(record, &header,NTFS_ATTR_DATA) == DISK_SUCCESS)
   {
     if (header->name.lenght != 0)
@@ -320,9 +311,9 @@ diskReturn_t ntfsReadFile(
     // TODO implement bytes read...
     // TODO we should test if bit 1 is set as the other bits are currently reserved...
     if ( !(header->isNonResident) )
-      return ntfsReadResidentData(header,buffer2,length,offset);
+      return ntfsReadResidentData(header,fileBuffer,length,offset);
 
-    return ntfsReadNonResidentData(volume, header, buffer2, length, offset);
+    return ntfsReadNonResidentData(volume, header, fileBuffer, length, offset);
   }
 
   // No valid entry found...
