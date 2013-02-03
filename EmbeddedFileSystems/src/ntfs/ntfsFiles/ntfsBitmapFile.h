@@ -9,6 +9,9 @@
  *   Thomas Schmid <schmid-thomas@gmx.net>
  */
 
-#include "ntfsListRecord.h"
+#ifndef NTFSBITMAPFILE_H_
+#define NTFSBITMAPFILE_H_
 
 
+
+#endif /* NTFSBITMAPFILE_H_ */

@@ -1,6 +1,7 @@
 /*
- * The content of this file is licensed. You may obtain a copy of the license
- * at http://sourceforge.net/projects/ntfs/ or request it via email from the author.
+ * The content of this file is licensed. You may obtain a copy of
+ * the license at https://github.com/thsmi/EmbeddedFileSystems/ or
+ * request it via email from the author.
  *
  * Do not remove or change this comment.
  *
@@ -30,6 +31,7 @@
 
     // Device handle is invalid
     DISK_ERROR_DEVICE_INVALID,
+    DISK_ERROR_WIN32 /** a Windows API call failed */
   } diskReturn_t;
 
 #endif

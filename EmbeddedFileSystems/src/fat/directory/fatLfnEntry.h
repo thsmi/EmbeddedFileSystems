@@ -36,7 +36,7 @@ typedef struct {
   uint16_t characters3[2]; // next 2 characters;
 } fatLfnEntry_t;
 
-inline diskReturn_t fatIsLastLfnEntry(fatLfnEntry_t* entry)
+diskReturn_t fatIsLastLfnEntry(fatLfnEntry_t* entry)
 {
   if ((entry->sequence & 0xF0) != 0x40)
     return DISK_ERROR;

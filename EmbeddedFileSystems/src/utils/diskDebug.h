@@ -1,6 +1,7 @@
 /*
- * The content of this file is licensed. You may obtain a copy of the license
- * at http://sourceforge.net/projects/ntfs/ or request it via email from the author.
+ * The content of this file is licensed. You may obtain a copy of
+ * the license at https://github.com/thsmi/EmbeddedFileSystems/ or
+ * request it via email from the author.
  *
  * Do not remove or change this comment.
  *
@@ -13,14 +14,15 @@
 
   #include "diskStatus.h"
   #include "diskDataTypes.h"
-  #include <wchar.h>
-  // helper
 
-/*#ifndef _DEBUG
-  #define _DEBUG
-#endif*/
+
+//  #ifndef _DEBUG
+//    #define _DEBUG
+//  #endif
+
 
   #ifdef _DEBUG
+    #include <wchar.h>
     #include <stdio.h>
     #define ntfsDebug(...) wprintf(__VA_ARGS__)
 

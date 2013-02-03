@@ -42,7 +42,7 @@ FlashParameters;
 
 typedef struct {
   struct {
-    uint8_t guid[16];
+    GUID guid;
     uint8_t undefined[32]; // OEM Specified content
   } parameter[10];
   uint8_t reserved1;

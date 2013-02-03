@@ -1,6 +1,7 @@
 /*
- * The content of this file is licensed. You may obtain a copy of the license
- * at http://sourceforge.net/projects/ntfs/ or request it via email from the author.
+ * The content of this file is licensed. You may obtain a copy of
+ * the license at https://github.com/thsmi/EmbeddedFileSystems/ or
+ * request it via email from the author.
  *
  * Do not remove or change this comment.
  *
@@ -13,7 +14,7 @@
 // Index files are typically one cluster in size, which is usually 4k or 8 Sectors
 #define NTFS_SECTORS_PER_INDEXRECORD 8
 
-diskReturn_t ntfsReadIndexRecord(diskDevice_t* hDevice, diskBuffer_t* buffer, ntfsIndexRecord_t** record)
+diskReturn_t ntfsReadIndexRecord(const diskDevice_t* hDevice, diskBuffer_t* buffer, ntfsIndexRecord_t** record)
 {
   if (buffer->sizeInSectors < NTFS_SECTORS_PER_INDEXRECORD)
     return DISK_ERROR;

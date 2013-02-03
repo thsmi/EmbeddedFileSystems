@@ -1,6 +1,7 @@
 /*
- * The content of this file is licensed. You may obtain a copy of the license
- * at http://sourceforge.net/projects/ntfs/ or request it via email from the author.
+ * The content of this file is licensed. You may obtain a copy of
+ * the license at https://github.com/thsmi/EmbeddedFileSystems/ or
+ * request it via email from the author.
  *
  * Do not remove or change this comment.
  *
@@ -25,6 +26,25 @@ diskReturn_t mbrReadRecord(diskDevice_t* hDevice, diskBuffer_t* buffer, mbrRecor
     return DISK_ERROR_SIGNATURE_BOOT;*/
 
   return DISK_SUCCESS;
+}
+
+diskReturn_t mbrNextPartition(const mbrRecord_t* record, mbrPartition_t** partition)
+{
+  // Check if we are out of bounds...
+  if ( (partition) && ((*partition) > (mbrPartition_t*) ntfsOffset(record,0x1EE)) )
+    return DISK_ERROR;
+
+  if (*partition == NULL)
+    (*partition) = (mbrPartition_t*) ntfsOffset(record, 0x1BE);
+  else
+    (*partition) = (mbrPartition_t*) ntfsOffset((*partition),sizeof(mbrPartition_t));
+
+  // Check if we are out of bounds...
+  if ( (*partition) > (mbrPartition_t*) ntfsOffset(record,0x1EE) )
+    return DISK_ERROR;
+
+  return DISK_SUCCESS;
+
 }
 
 uint8_t mbrSectorFromCHS(const uint8_t* chs)

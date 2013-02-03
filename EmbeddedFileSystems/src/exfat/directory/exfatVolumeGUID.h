@@ -20,7 +20,7 @@ typedef struct {
   /*0x01*/ uint8_t entries;
   /*0x02*/ uint16_t checksum;
   /*0x04*/ uint16_t flags;
-  /*0x06*/ uint8_t guid[16];
+  /*0x06*/ GUID guid;
   /*0x16*/ uint8_t reserved1[10];
 } extfatVolumeGuid_t;
 

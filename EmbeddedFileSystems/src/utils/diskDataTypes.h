@@ -1,6 +1,7 @@
 /*
- * The content of this file is licensed. You may obtain a copy of the license
- * at http://sourceforge.net/projects/ntfs/ or request it via email from the author.
+ * The content of this file is licensed. You may obtain a copy of
+ * the license at https://github.com/thsmi/EmbeddedFileSystems/ or
+ * request it via email from the author.
  *
  * Do not remove or change this comment.
  *
@@ -11,10 +12,10 @@
 #ifndef _INC_DISK_TYPES_H
   #define _INC_DISK_TYPES_H
 
-#include "diskStatus.h"
-#include "stdint.h"
-// types
+  #include "diskStatus.h"
+  #include "stdint.h"
 
+  // types
   #define NTFS_BYTES_PER_SECTOR 512LL
 
 /*// 1 Byte
@@ -38,9 +39,9 @@
   #define TRUE    1
 #endif*/
 
-#ifndef NULL
-  #define NULL    0
-#endif
+  #ifndef NULL
+    #define NULL    0
+  #endif
 
   #pragma pack(push, 1)
 
@@ -56,12 +57,13 @@
 
   #endif
 
+  #pragma pack(pop)
+
 
   typedef struct {
     uint8_t* bytes;
     uint16_t sizeInSectors;
   } diskBuffer_t;
 
-  #pragma pack(pop)
 
 #endif

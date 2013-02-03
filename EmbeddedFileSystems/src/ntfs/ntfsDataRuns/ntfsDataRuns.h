@@ -1,6 +1,7 @@
 /*
- * The content of this file is licensed. You may obtain a copy of the license
- * at http://sourceforge.net/projects/ntfs/ or request it via email from the author.
+ * The content of this file is licensed. You may obtain a copy of
+ * the license at https://github.com/thsmi/EmbeddedFileSystems/ or
+ * request it via email from the author.
  *
  * Do not remove or change this comment.
  *
@@ -18,11 +19,18 @@
 
   #pragma pack(push, 1)
 
-  typedef struct {
+  typedef struct ntfsDataRunTag_t ntfsDataRun_t;
+
+  /*struct ntfsDataRunTag_t {
     uint8_t header;
     uint8_t content[0];
-  } ntfsDataRun_t;
- 
+  };*/
+
+  /*typedef struct {
+    uint8_t header;
+    uint8_t content[0];
+  } ntfsDataRun_t;*/
+
   #pragma pack(pop) 
 
   diskReturn_t ntfsNextDataRun(const ntfsAttrHdr_t* attr, ntfsDataRun_t** dataRun, diskSeekMethod_t* method);

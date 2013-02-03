@@ -1,6 +1,7 @@
 /*
- * The content of this file is licensed. You may obtain a copy of the license
- * at http://sourceforge.net/projects/ntfs/ or request it via email from the author.
+ * The content of this file is licensed. You may obtain a copy of
+ * the license at https://github.com/thsmi/EmbeddedFileSystems/ or
+ * request it via email from the author.
  *
  * Do not remove or change this comment.
  *
@@ -10,7 +11,7 @@
 
 #include "ntfsBootRecord.h"
 
-diskReturn_t ntfsReadBootRecord(diskDevice_t* hDevice, diskBuffer_t* buffer, ntfsBootRecord_t** record)
+diskReturn_t ntfsReadBootRecord(const diskDevice_t* hDevice, diskBuffer_t* buffer, ntfsBootRecord_t** record)
 {
   if (diskReadRecord(hDevice, buffer,1) != DISK_SUCCESS)
     return DISK_ERROR_READ_RECORD;

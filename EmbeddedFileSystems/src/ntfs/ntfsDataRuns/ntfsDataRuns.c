@@ -1,6 +1,7 @@
 /*
- * The content of this file is licensed. You may obtain a copy of the license
- * at http://sourceforge.net/projects/ntfs/ or request it via email from the author.
+ * The content of this file is licensed. You may obtain a copy of
+ * the license at https://github.com/thsmi/EmbeddedFileSystems/ or
+ * request it via email from the author.
  *
  * Do not remove or change this comment.
  *
@@ -10,9 +11,15 @@
 
 #include "ntfsDataRuns.h"
 
+// Define datarun's internal structure internally, we don't need it somewhere else
+struct ntfsDataRunTag_t {
+  uint8_t header;
+  uint8_t content[0];
+};
+
 #define ntfsDataRunHeaderLenght(val) ((uint8_t)(((val)->header >> 4) & 0x0F) + (uint8_t) ((val)->header & 0x0F) +1)
 
-diskReturn_t ntfsGetDataRunLength(const ntfsDataRun_t* dataRun, uint64_t* length)
+static diskReturn_t ntfsGetDataRunLength(const ntfsDataRun_t* dataRun, uint64_t* length)
 {
   uint8_t len = 0;
   uint8_t* x = NULL;
@@ -48,7 +55,7 @@ diskReturn_t ntfsGetDataRunLength(const ntfsDataRun_t* dataRun, uint64_t* length
   return DISK_SUCCESS;
 }
 
-/*inline*/ diskReturn_t ntfsGetDataRunOffset(const ntfsDataRun_t* dataRun, uint64_t* offset, diskSeekMethod_t* method)
+static diskReturn_t ntfsGetDataRunOffset(const ntfsDataRun_t* dataRun, uint64_t* offset, diskSeekMethod_t* method)
 {
   const uint8_t* buff;
   uint8_t len = 0;

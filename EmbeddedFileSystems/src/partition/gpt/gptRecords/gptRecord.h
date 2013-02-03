@@ -1,6 +1,7 @@
 /*
- * The content of this file is licensed. You may obtain a copy of the license
- * at http://sourceforge.net/projects/ntfs/ or request it via email from the author.
+ * The content of this file is licensed. You may obtain a copy of
+ * the license at https://github.com/thsmi/EmbeddedFileSystems/ or
+ * request it via email from the author.
  *
  * Do not remove or change this comment.
  *
@@ -11,7 +12,7 @@
 #ifndef _INC_GTP_RECORD_H
   #define _INC_GTP_RECORD_H
 
-  #include "./../../disk/diskRecord/diskRecord.h"
+  #include "./../../../disk/diskRecord/diskRecord.h"
 
   // Partition Type definitions...
   // Global
@@ -43,7 +44,7 @@
       uint64_t firstUsable;
       uint64_t lastUsable;
     } lba;
-    uint8_t guid[16];
+    GUID guid;
  
     uint64_t arrayStartLBA; // Starting LBA of array of partition entries
     uint32_t arrayCount;
@@ -61,7 +62,7 @@
 
   typedef struct {
     uint8_t type[16];
-    uint8_t guid[16];
+    GUID guid;
     struct {
       uint64_t first;
       uint64_t last;

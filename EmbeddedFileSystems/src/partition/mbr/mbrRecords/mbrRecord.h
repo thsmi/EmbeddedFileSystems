@@ -1,6 +1,7 @@
 /*
- * The content of this file is licensed. You may obtain a copy of the license
- * at http://sourceforge.net/projects/ntfs/ or request it via email from the author.
+ * The content of this file is licensed. You may obtain a copy of
+ * the license at https://github.com/thsmi/EmbeddedFileSystems/ or
+ * request it via email from the author.
  *
  * Do not remove or change this comment.
  *
@@ -11,7 +12,7 @@
 #ifndef _INC_MBR_RECORD_H
   #define _INC_MBR_RECORD_H
 
-  #include "./../../disk/diskRecord/diskRecord.h"
+  #include "./../../../disk/diskRecord/diskRecord.h"
 
   #define MBR_BOOTABLE         0x80
   #define MBR_PARTITION_NTFS   0x07
@@ -45,7 +46,10 @@
   uint8_t mbrSectorFromCHS(const uint8_t* chs);
   uint8_t mbrHeadFromCHS(const uint8_t* chs);
   uint16_t mbrCylinderFromCHS(const uint8_t* chs);
+
   diskReturn_t mbrReadRecord(diskDevice_t* hDevice, diskBuffer_t* buffer, mbrRecord_t** record);
+
+  diskReturn_t mbrNextPartition(const mbrRecord_t* record, mbrPartition_t** partition);
 
   diskReturn_t mbrDumpPartitionInfo(mbrPartition_t* partInfo);
 

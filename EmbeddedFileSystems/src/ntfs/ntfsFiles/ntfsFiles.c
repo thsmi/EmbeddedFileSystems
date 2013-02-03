@@ -1,17 +1,21 @@
 /*
- * ntfsIO.c
+ * The content of this file is licensed. You may obtain a copy of
+ * the license at https://github.com/thsmi/EmbeddedFileSystems/ or
+ * request it via email from the author.
  *
- *  Created on: 13.01.2013
- *      Author: admin
+ * Do not remove or change this comment.
+ *
+ * The initial author of the code is:
+ *   Thomas Schmid <schmid-thomas@gmx.net>
  */
 
 #include "ntfsFiles.h"
-#include "../ntfs/ntfsRecords/ntfsIndexRecord.h"
-#include "../ntfs/ntfsRecords/ntfsRecord.h"
-#include "../ntfs/ntfsAttributes/ntfsIndexRoot.h"
-#include "../ntfs/ntfsAttributes/ntfsIndexAllocation.h"
+#include "../ntfsRecords/ntfsIndexRecord.h"
+#include "../ntfsRecords/ntfsRecord.h"
+#include "../ntfsAttributes/ntfsIndexRoot.h"
+#include "../ntfsAttributes/ntfsIndexAllocation.h"
 
-static inline diskReturn_t ntfsListIndexEntries(
+static diskReturn_t ntfsListIndexEntries(
     const ntfsIndexNodeHeader_t* header, ntfsNextFileCallback_t callback, uint8_t* data)
 {
   ntfsIndexNodeEntry_t* node = NULL;
@@ -31,7 +35,7 @@ static diskReturn_t ntfsListNonResidentIndexEntries(
     ntfsNextFileCallback_t callback, uint8_t* data)
 {
   // Helpers, compiler should optimize them out.
-  diskDevice_t* device = volume->partition->device;
+  const diskDevice_t* device = volume->device;
 
   ntfsDataRun_t* dataRun = NULL;
   diskSeekMethod_t method = DISK_SEEK_FORWARD;
@@ -82,7 +86,7 @@ diskReturn_t ntfsListFiles(
 {
 
   // Helpers, compiler should optimize them out.
-  diskDevice_t* device = volume->partition->device;
+  const diskDevice_t* device = volume->device;
 
   ntfsFileRecord_t* record = NULL;
   ntfsAttrHdr_t* header = NULL;
@@ -99,7 +103,7 @@ diskReturn_t ntfsListFiles(
   volumeSeekCluster(volume,volume->lcnMFT,DISK_SEEK_ABSOLUTE);
 
   if (file != NULL)
-    sector = ((((uint64_t)file->mftRecord.SegmentNumberHighPart) << 32)+(file->mftRecord.SegmentNumberLowPart))*2LL;
+    ntfsGetFileReferenceOffset(&(file->mftRecord),&sector);
 
   diskSeekRecord(device,sector);
 
@@ -142,7 +146,7 @@ diskReturn_t ntfsListFiles(
 
 
 static diskReturn_t ntfsReadResidentData(
-    const ntfsAttrHdr_t* header, diskBuffer_t* buffer2, uint64_t length, uint64_t offset)
+    const ntfsAttrHdr_t* header, diskBuffer_t* buffer2, uint64_t length, uint64_t offset, uint64_t* slack)
 {
   uint8_t* data = NULL;
   data = (uint8_t*) ntfsOffset(header,header->attrHeader.resident.attribute.offset);
@@ -154,6 +158,9 @@ static diskReturn_t ntfsReadResidentData(
   // convert length from sectors to bytes
   length *= NTFS_BYTES_PER_SECTOR;
   offset *= NTFS_BYTES_PER_SECTOR;
+
+  if(slack)
+    (*slack) = length + offset;
 
   // truncate length, so that only data is read...
   if (length > header->attrHeader.resident.attribute.lenght)
@@ -174,6 +181,8 @@ static diskReturn_t ntfsReadResidentData(
   if (ntfsMemCpy(buffer2,data,length) != DISK_SUCCESS)
     return DISK_ERROR;
 
+  (*slack) -= header->attrHeader.resident.attribute.lenght;
+
   return DISK_SUCCESS;
 }
 
@@ -189,27 +198,55 @@ static diskReturn_t ntfsReadResidentData(
  *   The number of sectors to read (in sectors)
  * @param offset2
  *   defines at which sector reading should start (in sectors)
+ * @param slack [in,out]
+ *   tracks the slack while reading the file. This means how many bytes within the buffer were left unused.
+ *   A slack bigger than 0 indicates you did not need the full buffer and most likely reached the end of file.
  * @return
  */
+
+/* TODO a 64bit file length and offset does not make any sense here especially for an embedded system.
+ * NTFS's physical maximal file length limit is 16 exabytes = 64bit. But windows 7 supports only 16TB.
+ * An windows 8 (((2^32)-1) * 64K per Cluster) = 256 TB. We do support in worst case with 512B Sectors
+ * 64bit+8bit and with 4K Sectors 64bit+32bit, which is way more than the physical limits...
+ *
+ * a readlength of 32bit (equals with 512 byte sectors 1024TB) should be more than enough
+ */
+
 static diskReturn_t ntfsReadNonResidentData(
     const ntfsVolume_t* volume,
-    const ntfsAttrHdr_t* header,  diskBuffer_t* buffer2, uint64_t readLength, uint64_t readOffset)
+    const ntfsAttrHdr_t* header,  diskBuffer_t* buffer2, uint64_t readLength, uint64_t readOffset, uint64_t* slack)
 {
-  diskDevice_t* device = volume->partition->device;
+  const diskDevice_t* device = volume->device;
   diskBuffer_t worker;
-
-  /* numread:
-   if (length2 > header->attrHeader.nonResident.size.real)
-     length2 = header->attrHeader.nonResident.size.real;*/
 
    ntfsDataRun_t* dataRun = NULL;
    diskSeekMethod_t method = DISK_SEEK_FORWARD;
 
+   // check for sufficient buffers
    if (buffer2->sizeInSectors < readLength)
      return DISK_ERROR;
 
-   // clone the buffer. It is used to keep track of the free space
-   diskInitBuffer(&worker,&buffer2->bytes[0],buffer2->sizeInSectors*NTFS_BYTES_PER_SECTOR);
+   // calculate the slack, we can do this a priori with the values stored in the MFT.
+   // if the MFT would be inconsistent we are lost anyhow.
+
+   if (slack)
+   {
+     (*slack) = (readOffset + readLength) * NTFS_BYTES_PER_SECTOR;
+
+     if (*slack > header->attrHeader.nonResident.size.real)
+       (*slack) -= header->attrHeader.nonResident.size.real;
+     else
+       (*slack) = 0;
+   }
+
+   // we can skip right here if the offset is bigger than the file
+   if (readOffset * NTFS_BYTES_PER_SECTOR > header->attrHeader.nonResident.size.real)
+     return DISK_SUCCESS;
+
+   // We create a temporary worker from our buffer. We crop the length to readLength...
+   // ... because it would be a fatal error to read more data than specified in readLength....
+   // ... readLength is guaranteed to be smaller than the buffer size.
+   diskInitBuffer(&worker,&buffer2->bytes[0],readLength *NTFS_BYTES_PER_SECTOR);
 
    while (ntfsNextDataRun(header,&dataRun,&method) == DISK_SUCCESS)
    {
@@ -218,7 +255,7 @@ static diskReturn_t ntfsReadNonResidentData(
      uint64_t runLength = 0;
      uint64_t runOffset = 0;
 
-     if (readLength == 0)
+     if (worker.sizeInSectors == 0)
        break;
 
      if (ntfsGetDataRun(dataRun,&runLength,&runOffset,&method) != DISK_SUCCESS)
@@ -252,9 +289,9 @@ static diskReturn_t ntfsReadNonResidentData(
      diskCurrentRecord(device,&pos);
      diskSeekRecordEx(device, runOffset, method, volume->volumeOffset);
 
-     // run length can't be bigger than the buffer, otherwise we would run out of bounds.
-     if (runLength > readLength)
-       runLength = readLength;
+     // run length can't be bigger than the worker, otherwise we would run out of bounds.
+     if (runLength > worker.sizeInSectors)
+       runLength = worker.sizeInSectors;
 
      diskReturn_t rv = diskReadRecord(device,&worker,runLength);
 
@@ -263,24 +300,20 @@ static diskReturn_t ntfsReadNonResidentData(
      if ( rv != DISK_SUCCESS)
        return DISK_ERROR;
 
-     readLength -= runLength;
-
      // shrink our worker, as it represents only the free bytes
-     worker.bytes += runLength;
      worker.sizeInSectors -= runLength;
+     worker.bytes += runLength*NTFS_BYTES_PER_SECTOR;
    }
-
-   // TODO return num read...
 
    return DISK_SUCCESS;
 }
 
 diskReturn_t ntfsReadFile(
     const ntfsVolume_t* volume, const ntfsFileHandle_t* file,  diskBuffer_t* mftBuffer,
-    diskBuffer_t* fileBuffer, uint64_t length, uint64_t offset)
+    diskBuffer_t* fileBuffer, uint64_t length, uint64_t offset, uint64_t* slack)
 {
   // Helpers, compiler should optimize them out.
-  diskDevice_t* device = volume->partition->device;
+  const diskDevice_t* device = volume->device;
 
   uint64_t sectors = 0;
   ntfsFileRecord_t* record = NULL;
@@ -292,7 +325,8 @@ diskReturn_t ntfsReadFile(
   // Move Read Pointer to disk's Master File Table...
   volumeSeekCluster(volume,volume->lcnMFT,DISK_SEEK_ABSOLUTE);
 
-  sectors = ((((uint64_t)file->mftRecord.SegmentNumberHighPart) << 32)+(file->mftRecord.SegmentNumberLowPart))*NTFS_SECTORS_PER_FILERECORD;
+  ntfsGetFileReferenceOffset(&(file->mftRecord),&(sectors));
+
   diskSeekRecord(device,sectors);
 
   if (ntfsReadFileRecord(device, mftBuffer,&record) != DISK_SUCCESS)
@@ -308,12 +342,11 @@ diskReturn_t ntfsReadFile(
     // ok we have an unnamed data attribute, so this is the main entry...
     // ... it might be resident or non resident.
 
-    // TODO implement bytes read...
     // TODO we should test if bit 1 is set as the other bits are currently reserved...
     if ( !(header->isNonResident) )
-      return ntfsReadResidentData(header,fileBuffer,length,offset);
+      return ntfsReadResidentData(header,fileBuffer,length,offset,slack);
 
-    return ntfsReadNonResidentData(volume, header, fileBuffer, length, offset);
+    return ntfsReadNonResidentData(volume, header, fileBuffer, length, offset, slack);
   }
 
   // No valid entry found...
