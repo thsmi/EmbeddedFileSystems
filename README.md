@@ -23,7 +23,4 @@ supports C99, you're lucky. C99 requires a full support for 64Bit values.
 
 ## License
 
-This libarary is free and open source software, it is made available to you 
-under the terms of the [GNU Affero General Public License (AGPLv3)](http://www.fsf.org/licensing/licenses/agpl-3.0.html).
-
 Refer to [Licensing information](LICENSE.md) for detail
