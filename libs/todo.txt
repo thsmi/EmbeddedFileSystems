@@ -1,0 +1,6 @@
+"if (header->isNonResident)" works currently perfectly fine.
+bit 0 idecates if resident or not. bits 1-7 are currently unused,
+as soon as they are used the test will be broken...
+
+device pointer should store a buffer and the current sector.
+Read only when the sector/cluster changed...
