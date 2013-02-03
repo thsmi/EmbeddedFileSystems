@@ -136,9 +136,9 @@
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.cygwin.base.808819259" name="Cygwin C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.cygwin.base">
 								<option id="gnu.c.link.option.libs.771154306" name="Libraries (-l)" superClass="gnu.c.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="ntfs.lib"/>
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="partition.lib"/>
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="core.lib"/>
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="core.win32.lib"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="core.lib"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="partition.lib"/>
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="setupapi"/>
 								</option>
 								<option id="gnu.c.link.option.paths.1952698220" name="Library search path (-L)" superClass="gnu.c.link.option.paths" valueType="libPaths">
