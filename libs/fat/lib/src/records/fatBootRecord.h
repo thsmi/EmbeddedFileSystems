@@ -11,7 +11,7 @@
 #ifndef _INC_FAT_BOOT_RECORD_H
   #define _INC_FAT_BOOT_RECORD_H
 
-  #include "./../../utils/diskUtils.h"
+  #include "utils/diskUtils.h"
   
   #pragma pack(push, 1)
 

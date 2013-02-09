@@ -30,14 +30,5 @@ diskReturn_t ntfsReadBootRecord(const diskDevice_t* hDevice, diskBuffer_t* buffe
   if (!ntfsMemcmp16(ntfsBufferPos(buffer,1022), ntfsBufferPos(buffer,(*record)->fixUpArray.offset)))
     return DISK_ERROR;*/
 
-  // copy the fixup values into the right spots
-/*  ntfsMemCpy16(ntfsOffset(buffer->buffer,510), ntfsOffset(buffer->buffer,(*record)->fixUpArray.offset+2));
-  ntfsMemCpy16(ntfsOffset(buffer->buffer,1022), ntfsOffset(buffer->buffer,(*record)->fixUpArray.offset+4));
-  */
-/*  ntfsMemcpy16(ntfsBufferPos(buffer,510),ntfsBufferPos(buffer,(*record)->fixUpArray.offset+2));
-  ntfsMemcpy16(ntfsBufferPos(buffer,1022),ntfsBufferPos(buffer,(*record)->fixUpArray.offset+4));*/
-
-//  buffer->idx += (*record)->attribute.offset;
-
   return DISK_SUCCESS;
 }

@@ -1,9 +1,10 @@
 /*
- * The content of this file is licensed. You may obtain a copy of the license
- * at http://sourceforge.net/projects/ntfs/ or request it via email from the author.
+ * The content of this file is licensed. You may obtain a copy of
+ * the license at https://github.com/thsmi/EmbeddedFileSystems/ or
+ * request it via email from the author.
  *
  * Do not remove or change this comment.
- * 
+ *
  * The initial author of the code is:
  *   Thomas Schmid <schmid-thomas@gmx.net>
  */
@@ -23,8 +24,6 @@ diskReturn_t ntfsNextAttr(const ntfsFileRecord_t* record, ntfsAttrHdr_t** attr)
 
   if ( (*attr)->type ==  ((uint32_t)NTFS_ATTR_END_OF_LIST) )
     return DISK_ERROR_ATTRIBUTE_INVAILD;
-
-  // TODO read next buffer page only if necessary...
 
   // TODO check if boundaries are broken
   return DISK_SUCCESS;

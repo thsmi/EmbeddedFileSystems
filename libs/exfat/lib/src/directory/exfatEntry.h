@@ -8,6 +8,8 @@
 #ifndef EXFATENTRY_H_
 #define EXFATENTRY_H_
 
+#include "utils/diskDataTypes.h"
+
 // The Checksum is computed across all entries in the set, excluding the checksum itself.
 
 uint16_t exfatCalcEntrySetChecksum(const uint8_t octets[], uint32_t numberOfBytes)

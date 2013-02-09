@@ -10,7 +10,6 @@
  */
 #include "ntfsAttrDefFile.h"
 
-
  // TODO the bufferlength is in full sectors, but the data stream containing the attrdef might be much smaller...
 diskReturn_t ntfsNextAttrDef(const diskBuffer_t* buffer, ntfsAttrDef_t** attr)
 {

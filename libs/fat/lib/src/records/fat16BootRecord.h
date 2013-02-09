@@ -11,7 +11,7 @@
 #ifndef _INC_FAT16_BOOT_RECORD_H
   #define _INC_FAT16_BOOT_RECORD_H
 
-  #include "./../../disk/diskRecord/diskRecord.h"
+  #include "disk/diskRecord/diskRecord.h"
   #include "fatBootRecord.h"
 
   #pragma pack(push, 1)
