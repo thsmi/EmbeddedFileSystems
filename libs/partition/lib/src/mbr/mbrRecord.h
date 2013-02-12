@@ -9,8 +9,8 @@
  *   Thomas Schmid <schmid-thomas@gmx.net>
  */
 
-#ifndef _INC_MBR_RECORD_H
-  #define _INC_MBR_RECORD_H
+#ifndef MBR_RECORD_H_
+  #define MBR_RECORD_H_
 
   #include "disk/diskRecord/diskRecord.h"
 

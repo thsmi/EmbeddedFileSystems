@@ -1,12 +1,16 @@
 /*
- * ntfsObject.h
+ * The content of this file is licensed. You may obtain a copy of
+ * the license at https://github.com/thsmi/EmbeddedFileSystems/ or
+ * request it via email from the author.
  *
- *  Created on: 08.02.2013
- *      Author: admin
+ * Do not remove or change this comment.
+ *
+ * The initial author of the code is:
+ *   Thomas Schmid <schmid-thomas@gmx.net>
  */
 
-#ifndef NTFSOBJECTID_H_
-#define NTFSOBJECTID_H_
+#ifndef NTFS_OBJECT_ID_ATTTRIBUTE_H_
+  #define NTFS_OBJECT_ID_ATTTRIBUTE_H_
 
   #include "utils/diskUtils.h"
 
@@ -19,4 +23,4 @@
     } birth;
   } ntfsAttrObjectId_t;
 
-#endif /* NTFSOBJECTID_H_ */
+#endif

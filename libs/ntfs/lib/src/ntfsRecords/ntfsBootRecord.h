@@ -9,8 +9,8 @@
  *   Thomas Schmid <schmid-thomas@gmx.net>
  */
 
-#ifndef _INC_NTFS_BOOT_RECORD_H
-  #define _INC_NTFS_BOOT_RECORD_H
+#ifndef NTFS_BOOT_RECORD_H_
+  #define NTFS_BOOT_RECORD_H_
 
   #include "disk/diskRecord/diskRecord.h"
 

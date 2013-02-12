@@ -12,6 +12,15 @@
 #include "utils/diskUtils.h"
 #include <string.h>
 
+
+diskReturn_t ntfsMemCmp(const uint8_t* buffer1, const uint8_t* buffer2, uint32_t length)
+{
+  if (memcmp(buffer1, buffer2, length)!=0)
+    return DISK_ERROR;
+
+  return DISK_SUCCESS;
+}
+
 diskReturn_t ntfsMemCpy(diskBuffer_t* buffer, uint8_t* data, uint32_t length)
 {
   if (memcpy(&(buffer->bytes[0]),data,length) == NULL)

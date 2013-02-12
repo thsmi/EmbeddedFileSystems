@@ -29,5 +29,6 @@
 
   // Forward declaration, needs to be replaced with platform specific code
   extern diskReturn_t ntfsMemCpy(diskBuffer_t* buffer, uint8_t* data, uint32_t length);
+  extern diskReturn_t ntfsMemCmp(const uint8_t* buffer1, const uint8_t* buffer2, uint32_t length);
 
 #endif

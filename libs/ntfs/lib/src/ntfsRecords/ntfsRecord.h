@@ -9,8 +9,8 @@
  *   Thomas Schmid <schmid-thomas@gmx.net>
  */
 
-#ifndef _INC_NTFS_RECORD_H
-  #define _INC_NTFS_RECORD_H
+#ifndef NTFS_RECORD_H_
+  #define NTFS_RECORD_H_
 
   #include "utils/diskDataTypes.h"
   #include "disk/diskRecord/diskRecord.h"
@@ -56,34 +56,33 @@
 
   #pragma pack(pop)
 
-/**
- *  NTFS records typically span multiple sectors. In order to ensure file system consistency, it has
- *  to be guaranteed, when the first sector is written all succeeding sectors are also written. If the
- *  first sector would be written an then stopped there would be an inconsistency in the file system.
- *
- *  NTFS used fixup array to ensure file system consistency and detect if sectors where written correctly.
- *  The last bit of each sector is replaced with a fixup entry. This entry has to be identical for all
- *  consecutive sectors. The original values are stored in the fixup array.
- *
- *  Before using data in a sector you need to restore the fixup data with the original values.
- *
- * @param hDevice
- * @param record
- * @param record
- * @return
- */
-diskReturn_t ntfsNextFixUpEntry(const ntfsRecordHeader_t* record, ntfsFixUpEntry_t** entry);
+  /**
+   *  NTFS records typically span multiple sectors. In order to ensure file system consistency, it has
+   *  to be guaranteed, when the first sector is written all succeeding sectors are also written. If the
+   *  first sector would be written an then stopped there would be an inconsistency in the file system.
+   *
+   *  NTFS used fixup array to ensure file system consistency and detect if sectors where written correctly.
+   *  The last bit of each sector is replaced with a fixup entry. This entry has to be identical for all
+   *  consecutive sectors. The original values are stored in the fixup array.
+   *
+   *  Before using data in a sector you need to restore the fixup data with the original values.
+   *
+   * @param hDevice
+   * @param record
+   * @param record
+   * @return
+   */
+  diskReturn_t ntfsNextFixUpEntry(const ntfsRecordHeader_t* record, ntfsFixUpEntry_t** entry);
 
 
-/**
- *
- * @param hDevice
- * @param record
- * @param size
- *   The number sectors, where the fixup entry should replaced. Must be smaller or equal to the fixup array size.
- * @return
- */
-diskReturn_t ntfsFixUpRecord(const ntfsRecordHeader_t* record, const uint16_t sectors);
-
+  /**
+   *
+   * @param hDevice
+   * @param record
+   * @param size
+   *   The number sectors, where the fixup entry should replaced. Must be smaller or equal to the fixup array size.
+   * @return
+   */
+  diskReturn_t ntfsFixUpRecord(const ntfsRecordHeader_t* record, const uint16_t sectors);
 
 #endif

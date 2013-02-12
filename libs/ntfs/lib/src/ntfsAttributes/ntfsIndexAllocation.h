@@ -1,6 +1,7 @@
 /*
- * The content of this file is licensed. You may obtain a copy of the license
- * at http://sourceforge.net/projects/ntfs/ or request it via email from the author.
+ * The content of this file is licensed. You may obtain a copy of
+ * the license at https://github.com/thsmi/EmbeddedFileSystems/ or
+ * request it via email from the author.
  *
  * Do not remove or change this comment.
  *
@@ -8,8 +9,8 @@
  *   Thomas Schmid <schmid-thomas@gmx.net>
  */
 
-#ifndef _INC_NTFS_INDEX_ALLOCATION_ATTRIBUTES_H
-  #define _INC_NTFS_INDEX_ALLOCATION_ATTRIBUTES_H
+#ifndef NTFS_INDEX_ALLOCATION_ATTRIBUTE_H_
+  #define NTFS_INDEX_ALLOCATION_ATTRIBUTE_H_
 
   #include "utils/diskUtils.h"
   #include "ntfsAttributes.h"

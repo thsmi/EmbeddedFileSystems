@@ -15,5 +15,6 @@
 #include "utils/diskUtils.h"
 
 diskReturn_t ntfsMemCpy(diskBuffer_t* buffer, uint8_t* data, uint32_t* length);
+diskReturn_t ntfsMemCmp(const uint8_t* buffer1, const uint8_t* buffer2, uint32_t length);
 
 #endif /* DISKUTILSWIN32_H_ */

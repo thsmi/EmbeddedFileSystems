@@ -9,25 +9,25 @@
  *   Thomas Schmid <schmid-thomas@gmx.net>
  */
 
-#ifndef NTFSVOLUME_H_
-#define NTFSVOLUME_H_
+#ifndef NTFS_VOLUME_H_
+  #define NTFS_VOLUME_H_
 
-#include "disk/diskRecord/diskRecord.h"
-#include "mbr/mbrRecord.h"
+  #include "disk/diskRecord/diskRecord.h"
+  #include "mbr/mbrRecord.h"
 
-typedef struct {
-  const diskDevice_t* device;
-  uint64_t lcnMFT;
+  typedef struct {
+    const diskDevice_t* device;
+    uint64_t lcnMFT;
 
-  uint16_t bytesPerSector;
-  uint8_t  sectorsPerCluster;
+    uint16_t bytesPerSector;
+    uint8_t  sectorsPerCluster;
 
-  uint64_t volumeOffset;
-} ntfsVolume_t;
+    uint64_t volumeOffset;
+  } ntfsVolume_t;
 
-// rename to volumeOpenNtfs
-diskReturn_t ntfsOpenVolume(const diskDevice_t* device, const mbrPartition_t* partition,  diskBuffer_t* buffer, ntfsVolume_t* volume);
+  // rename to volumeOpenNtfs
+  diskReturn_t ntfsOpenVolume(const diskDevice_t* device, const mbrPartition_t* partition,  diskBuffer_t* buffer, ntfsVolume_t* volume);
 
-diskReturn_t volumeSeekCluster(const ntfsVolume_t* volume, uint64_t cluster, diskSeekMethod_t method);
+  diskReturn_t volumeSeekCluster(const ntfsVolume_t* volume, uint64_t cluster, diskSeekMethod_t method);
 
-#endif /* NTFSVOLUME_H_ */
+#endif

@@ -9,8 +9,8 @@
  *   Thomas Schmid <schmid-thomas@gmx.net>
  */
 
-#ifndef _INC_DISK_RECORDS_H
-  #define _INC_DISK_RECORDS_H
+#ifndef DISK_RECORDS_H_
+  #define DISK_RECORDS_H_
 
   #include "./../../utils/diskUtils.h"
   #include "./../../utils/diskStatus.h"

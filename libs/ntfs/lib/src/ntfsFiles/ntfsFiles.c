@@ -15,13 +15,14 @@
 #include "../ntfsAttributes/ntfsIndexRoot.h"
 #include "../ntfsAttributes/ntfsIndexAllocation.h"
 
+
 static diskReturn_t ntfsListIndexEntries(
     const ntfsIndexNodeHeader_t* header, ntfsNextFileCallback_t callback, uint8_t* data)
 {
   ntfsIndexNodeEntry_t* node = NULL;
 
   while (ntfsNextIndexNode(header,&node) == DISK_SUCCESS)
-    if (callback(node->mftReference,&(node->file),data) != DISK_SUCCESS)
+    if (callback(node->mftReference,&(node->file),data) == DISK_SUCCESS)
       return DISK_SUCCESS;
 
   return DISK_SUCCESS;

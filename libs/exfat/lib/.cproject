@@ -23,7 +23,7 @@
 							<targetPlatform id="cdt.managedbuild.target.gnu.platform.cygwin.lib.debug.69812971" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.cygwin.lib.debug"/>
 							<builder buildPath="${workspace_loc:/exfat.lib}/Debug" id="org.eclipse.cdt.build.core.internal.builder.1740833917" keepEnvironmentInBuildfile="false" name="CDT Internal Builder" superClass="org.eclipse.cdt.build.core.internal.builder"/>
 							<tool id="cdt.managedbuild.tool.gnu.assembler.cygwin.lib.debug.1495262600" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.cygwin.lib.debug">
-								<option id="gnu.both.asm.option.include.paths.1974761767" superClass="gnu.both.asm.option.include.paths" valueType="includePath"/>
+								<option id="gnu.both.asm.option.include.paths.1974761767" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths"/>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.923089818" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.archiver.cygwin.lib.debug.1070869372" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.cygwin.lib.debug"/>
@@ -37,7 +37,7 @@
 								<option id="gnu.c.compiler.option.misc.other.1213110290" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0  -std=c99" valueType="string"/>
 								<option id="gnu.c.compiler.option.warnings.pedantic.13801687" name="Pedantic (-pedantic)" superClass="gnu.c.compiler.option.warnings.pedantic" value="true" valueType="boolean"/>
 								<option id="gnu.c.compiler.option.warnings.extrawarn.141446856" name="Extra warnings (-Wextra)" superClass="gnu.c.compiler.option.warnings.extrawarn" value="true" valueType="boolean"/>
-								<option id="gnu.c.compiler.option.include.paths.334632824" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+								<option id="gnu.c.compiler.option.include.paths.334632824" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/core.lib/src}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.cygwin.61491468" superClass="cdt.managedbuild.tool.gnu.c.compiler.input.cygwin"/>
@@ -83,7 +83,7 @@
 							<targetPlatform id="cdt.managedbuild.target.gnu.platform.cygwin.lib.release.2036999599" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.cygwin.lib.release"/>
 							<builder buildPath="${workspace_loc:/exfat.lib}/Release" id="org.eclipse.cdt.build.core.internal.builder.838216187" keepEnvironmentInBuildfile="false" name="CDT Internal Builder" superClass="org.eclipse.cdt.build.core.internal.builder"/>
 							<tool id="cdt.managedbuild.tool.gnu.assembler.cygwin.lib.release.1825150597" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.cygwin.lib.release">
-								<option id="gnu.both.asm.option.include.paths.1667008184" superClass="gnu.both.asm.option.include.paths" valueType="includePath"/>
+								<option id="gnu.both.asm.option.include.paths.1667008184" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths"/>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1414511315" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.archiver.cygwin.lib.release.719051111" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.cygwin.lib.release"/>
@@ -97,7 +97,7 @@
 								<option id="gnu.c.compiler.option.misc.other.1270765643" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0  -std=c99" valueType="string"/>
 								<option id="gnu.c.compiler.option.warnings.pedantic.1851089511" name="Pedantic (-pedantic)" superClass="gnu.c.compiler.option.warnings.pedantic" value="true" valueType="boolean"/>
 								<option id="gnu.c.compiler.option.warnings.extrawarn.209908179" name="Extra warnings (-Wextra)" superClass="gnu.c.compiler.option.warnings.extrawarn" value="true" valueType="boolean"/>
-								<option id="gnu.c.compiler.option.include.paths.1898237789" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+								<option id="gnu.c.compiler.option.include.paths.1898237789" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/core.lib/src}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.cygwin.476079257" superClass="cdt.managedbuild.tool.gnu.c.compiler.input.cygwin"/>
@@ -135,4 +135,5 @@
 		</scannerConfigBuildInfo>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
+	<storageModule moduleId="refreshScope"/>
 </cproject>

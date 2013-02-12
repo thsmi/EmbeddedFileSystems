@@ -9,8 +9,8 @@
  *   Thomas Schmid <schmid-thomas@gmx.net>
  */
 
-#ifndef _INC_NTFS_ATTRIBUTES_H
-  #define _INC_NTFS_ATTRIBUTES_H
+#ifndef NTFS_ATTRIBUTES_H_
+  #define NTFS_ATTRIBUTES_H_
 
   #include "utils/diskUtils.h"
   #include "./../ntfsRecords/ntfsFileRecord.h"

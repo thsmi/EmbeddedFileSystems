@@ -9,8 +9,8 @@
  *   Thomas Schmid <schmid-thomas@gmx.net>
  */
 
-#ifndef _INC_NTFS_FILE_RECORD_H
-  #define _INC_NTFS_FILE_RECORD_H
+#ifndef NTFS_FILE_RECORD_H_
+  #define NTFS_FILE_RECORD_H_
 
   #include "ntfsRecord.h"
   #include "disk/diskRecord/diskRecord.h"
@@ -22,6 +22,7 @@
     uint16_t SegmentNumberHighPart;
     uint16_t SequenceNumber;
   } ntfsFileReference_t;
+
 
   #pragma pack(pop)
 

@@ -9,8 +9,8 @@
  *   Thomas Schmid <schmid-thomas@gmx.net>
  */
 
-#ifndef _INC_NTFS_ATTRIBUTE_LIST_RECORD_H
-  #define _INC_NTFS_ATTRIBUTE_LIST_RECORD_H
+#ifndef NTFS_ATTRIBUTE_LIST_RECORD_H_
+  #define NTFS_ATTRIBUTE_LIST_RECORD_H_
 
   #include "utils/diskUtils.h"
   #include "utils/diskStatus.h"

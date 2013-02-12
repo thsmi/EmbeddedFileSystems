@@ -9,8 +9,8 @@
  *   Thomas Schmid <schmid-thomas@gmx.net>
  */
 
-#ifndef _INC_DISK_DEBUG_H
-  #define _INC_DISK_DEBUG_H
+#ifndef DISK_DEBUG_H_
+  #define DISK_DEBUG_H_
 
   #include "diskStatus.h"
   #include "diskDataTypes.h"

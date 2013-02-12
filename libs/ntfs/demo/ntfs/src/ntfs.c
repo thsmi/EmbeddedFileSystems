@@ -51,8 +51,9 @@
 // Parses the $root file
 
 // Each file is 1024 Bytes long. If its longer the it is moved to non resident areas
-diskReturn_t ntfsListMFT(diskDevice_t* device, diskBuffer_t* buffer, uint64_t lcnMFT, uint64_t sectorsPerCluster, uint64_t volumeOffset)
+static diskReturn_t listMFT(const ntfsVolume_t* volume)
 {
+
   uint32_t i = 0;
   ntfsFileRecord_t* record = NULL;
 
@@ -61,16 +62,13 @@ diskReturn_t ntfsListMFT(diskDevice_t* device, diskBuffer_t* buffer, uint64_t lc
 
   uint8_t wait = 0;
 
-  // Jeder MFT Record ist mindestens 1024 Bytes groß
-  // Sofern die Cluster Size größer ist zieht diese.
-  /*LARGE_INTEGER distance;
-  distance.QuadPart = lcnMFT * bytesPerCluster + volumeOffset;
+  volumeSeekCluster(volume,volume->lcnMFT,DISK_SEEK_ABSOLUTE);
 
-  SetFilePointerEx(*hDevice, distance, NULL, FILE_BEGIN);*/
+  uint8_t mftBuff[NTFS_BYTES_PER_SECTOR*8];
+  diskBuffer_t mftBuffer;
+  diskInitBuffer(&mftBuffer, &mftBuff[0], sizeof(mftBuff));
 
-  diskSeekRecordEx(device, lcnMFT *  sectorsPerCluster, DISK_SEEK_ABSOLUTE, volumeOffset);
-
-  while (ntfsReadFileRecord(device, buffer,&record) == DISK_SUCCESS)
+  while (ntfsReadFileRecord(volume->device, &mftBuffer,&record) == DISK_SUCCESS)
   {
     uint8_t dataSegments = 0;
     ntfsAttrHdr_t* header = NULL;
@@ -155,7 +153,7 @@ diskReturn_t ntfsListMFT(diskDevice_t* device, diskBuffer_t* buffer, uint64_t lc
           diskSeekMethod_t method = DISK_SEEK_FORWARD;
 
           //backup old position...
-          diskCurrentRecord(device,&pos);
+          diskCurrentRecord(volume->device,&pos);
 
           while (ntfsNextDataRun(header,&dataRun,&method) == DISK_SUCCESS)
           {
@@ -183,16 +181,17 @@ diskReturn_t ntfsListMFT(diskDevice_t* device, diskBuffer_t* buffer, uint64_t lc
             if (length > 1)
               ntfsDebug(L"Warning more than one record");
 
-           diskSeekRecordEx(device,((uint64_t)offset)*((uint64_t)sectorsPerCluster),method,volumeOffset);
+            volumeSeekCluster(volume,offset,method);
+           //diskSeekRecordEx(device,((uint64_t)offset)*((uint64_t)sectorsPerCluster),method,volumeOffset);
 
            ntfsDebug(L"[%#llx] Offset Cluster \n",offset);
-           ntfsDebug(L"[%#llx] Offset2 \n",((uint64_t)offset)*((uint64_t)sectorsPerCluster));
+           ntfsDebug(L"[%#llx] Offset2 \n",((uint64_t)offset)*volume->sectorsPerCluster);
 
            ntfsDebug(L"[%#x] DataRun %#x %#x \n",i*1024,length,offset);
 
            while (length--)
            {
-             if (diskReadRecord(device, &buffer2,2) != DISK_SUCCESS)
+             if (diskReadRecord(volume->device, &buffer2,2) != DISK_SUCCESS)
                return DISK_ERROR_READ_RECORD;
 
              ntfsHexDump(buffer2.bytes,12);
@@ -206,7 +205,7 @@ diskReturn_t ntfsListMFT(diskDevice_t* device, diskBuffer_t* buffer, uint64_t lc
           }
 
           // restore old position
-          diskSeekRecordEx(device,pos,DISK_SEEK_ABSOLUTE,0x0LL);
+          diskSeekRecordEx(volume->device,pos,DISK_SEEK_ABSOLUTE,0x0LL);
           wait = 0;
         }
       }
@@ -242,7 +241,7 @@ static diskReturn_t listAttrDef(const ntfsVolume_t* volume)
   diskInitBuffer(&mftBuffer,&mftBuff[0],sizeof(mftBuff));
   diskInitBuffer(&fileBuffer,&fileBuff[0],sizeof(fileBuff));
 
-  ntfsFileHandle_t file = {.mftRecord = {NTFS_$ATTRDEF_RECORD,0,0} };
+  ntfsFileHandle_t file = { .mftRecord = {NTFS_$ATTRDEF_RECORD,0,0}, .volume = volume };
 
   ntfsReadFile(volume, &file, &mftBuffer, &fileBuffer,8,0,&slack);
 
@@ -313,66 +312,101 @@ static diskReturn_t dumpCluster(const ntfsVolume_t* volume, uint64_t cluster)
   return DISK_SUCCESS;
 }
 
-static diskReturn_t listFiles(ntfsFileReference_t mftReference, const ntfsAttrFileName_t* file, uint8_t* data)
+static diskReturn_t onListFiles(ntfsFileReference_t mftReference, const ntfsAttrFileName_t* file, uint8_t* data)
 {
   // To read file jump to the mftRecord referenced...
-  const uint16_t* filename = &(file->name.value[0]);
-  uint16_t length = file->name.length;
 
   if (file->flags & 0x10000000)
+  {
     ntfsStrDump(L"Directory: ",11);
+    if (data)
+      (*((ntfsFileReference_t*) data)) = mftReference;
+
+  }
   else
     ntfsStrDump(L"Filename: ",10);
 
-  ntfsStrDump(filename, length);
+  ntfsStrDump(&(file->name.value[0]), file->name.length);
   
   ntfsStrDump(L" \n",2);
-
-  if (file->flags & 0x10000000)
-    return DISK_SUCCESS;
-
-  if (!ntfsMemcmp16((file->name.value)[0],L"l"))
-    return DISK_SUCCESS;
-
-  if (!ntfsMemcmp16((file->name.value)[1],L"p"))
-    return DISK_SUCCESS;
-
-  if (!ntfsMemcmp16((file->name.value)[2],L"c"))
-    return DISK_SUCCESS;
-
-  if (!ntfsMemcmp16((file->name.value)[3],L"."))
-    return DISK_SUCCESS;
-
-  if (!ntfsMemcmp16((file->name.value)[4],L"t"))
-    return DISK_SUCCESS;
-
-  if (!ntfsMemcmp16((file->name.value)[5],L"x"))
-    return DISK_SUCCESS;
-
-  if (!ntfsMemcmp16((file->name.value)[6],L"t"))
-    return DISK_SUCCESS;
-
-  // we found the file, we can skip...
-  (*((ntfsFileReference_t*) data)) = mftReference;
-
-  ntfsDebug(L" File found... \n");
 
   return DISK_ERROR;
 }
 
-  // FLAGS 0x16
-  // Parse Header
+static diskReturn_t listFiles(const ntfsVolume_t* volume)
+{
+  ntfsFileReference_t mftReference = {0,0,0};
 
+  uint8_t mftBuff[NTFS_BYTES_PER_SECTOR*2LL];
+  diskBuffer_t mftBuffer;
 
-  // Parser Attributes
-  // Attribute:
+  uint8_t fileBuff[NTFS_BYTES_PER_SECTOR*8LL];
+  diskBuffer_t fileBuffer;
 
+  diskInitBuffer(&mftBuffer,&mftBuff[0],sizeof(mftBuff));
+  diskInitBuffer(&fileBuffer,&fileBuff[0],sizeof(fileBuff));
 
-  // Read Attribute ...
-  // 2 Bytes : Bytes per Sector
-  // 1 Byte : sector / cluster
-  // 2 Byte : res
-  //  3 Bytes : 0X000000
+  ntfsDebug(L"=== Listing directory\n");
+  ntfsListFiles(volume, NULL,  &mftBuffer, &fileBuffer, &onListFiles, (uint8_t*)(&mftReference));
+
+  if ((mftReference.SegmentNumberLowPart == 0) && (mftReference.SegmentNumberHighPart == 0))
+    return DISK_SUCCESS;
+
+  ntfsFileHandle_t file = { .mftRecord = mftReference, .volume = volume };
+
+  ntfsDebug(L"=== Listing directory\n");
+  return ntfsListFiles(volume, &file, &fileBuffer, &fileBuffer,&onListFiles, NULL);
+}
+
+static diskReturn_t onListFiles2(ntfsFileReference_t mftReference, const ntfsAttrFileName_t* file, uint8_t* data)
+{
+  if (file->flags & 0x10000000)
+    return DISK_ERROR;
+
+  if (ntfsMemCmp((uint8_t*)(L"lpc.txt"), (uint8_t*) (&(file->name.value[0])) , 14 ) == DISK_ERROR)
+    return DISK_ERROR;
+
+  // we found the file, we can skip...
+  if (data)
+    (*((ntfsFileReference_t*) data)) = mftReference;
+
+  ntfsDebug(L" File found... \n");
+
+  return DISK_SUCCESS;
+}
+
+static diskReturn_t readFile(const ntfsVolume_t* volume)
+{
+  ntfsFileReference_t mftReference = {0,0,0};
+
+  uint8_t mftBuff[NTFS_BYTES_PER_SECTOR*2LL];
+  diskBuffer_t mftBuffer;
+
+  uint8_t fileBuff[NTFS_BYTES_PER_SECTOR*8LL];
+  diskBuffer_t fileBuffer;
+
+  diskInitBuffer(&mftBuffer,&mftBuff[0],sizeof(mftBuff));
+  diskInitBuffer(&fileBuffer,&fileBuff[0],sizeof(fileBuff));
+
+  ntfsListFiles(volume, NULL,  &mftBuffer, &fileBuffer, &onListFiles2, (uint8_t*)(&mftReference));
+
+  if ((mftReference.SegmentNumberLowPart == 0) && (mftReference.SegmentNumberHighPart == 0))
+    return DISK_SUCCESS;
+
+  ntfsFileHandle_t file = { .mftRecord = mftReference, .volume = volume };
+
+  uint64_t slack = 0;
+  do {
+
+    if (ntfsReadFile(volume,&file,&mftBuffer,&fileBuffer,2,0,&slack) != DISK_SUCCESS)
+      { ntfsDebug(L"Reading clusters failed"); }
+
+    ntfsStrDump((uint16_t*)&(fileBuffer.bytes[0]),128);
+    ntfsStrDump(L"\n",1);
+  } while (!slack);
+
+  return DISK_SUCCESS;
+}
 
 
 diskReturn_t ReadDisk(LPCWSTR lpFileName)
@@ -384,6 +418,7 @@ diskReturn_t ReadDisk(LPCWSTR lpFileName)
 
   uint8_t  buff[NTFS_BYTES_PER_SECTOR*2];
   diskBuffer_t buffer;
+  diskInitBuffer(&buffer,buff,sizeof(buff));
 
   if (diskOpenDevice(lpFileName, &device) != DISK_SUCCESS)
     return DISK_ERROR;
@@ -399,35 +434,29 @@ diskReturn_t ReadDisk(LPCWSTR lpFileName)
   ntfsDebug(L" Sectors per Track = %ld\n", geometry.SectorsPerTrack);
   ntfsDebug(L" Bytes per Sector = %ld\n", geometry.BytesPerSector);
 
-  diskInitBuffer(&buffer,buff,sizeof(buff));
-
   // Ensure we start at the disks first sector...
-  // SetFilePointer(device.handle, 0, NULL, FILE_BEGIN);
   diskSeekRecordEx(&device,0,DISK_SEEK_ABSOLUTE,0x0LL);
 
   if (mbrReadRecord(&device,&buffer,&record) != DISK_SUCCESS)
     return DISK_ERROR;
 
-  mbrPartition_t* partition1 = NULL;
+  mbrPartition_t* partition = NULL;
 
-  while (mbrNextPartition(record,&partition1) == DISK_SUCCESS)
-    mbrDumpPartitionInfo(partition1);
+  while (mbrNextPartition(record,&partition) == DISK_SUCCESS)
+    mbrDumpPartitionInfo(partition);
 
-  partition1 = NULL;
-  mbrNextPartition(record,&partition1);
-  mbrNextPartition(record,&partition1);
-  //mbrNextPartition(record,&partition1);
+  partition = NULL;
+  mbrNextPartition(record,&partition);
+  mbrNextPartition(record,&partition);
+  mbrNextPartition(record,&partition);
   
-  //diskPartition_t partition;
-
   /*partition.sector = record->partitions[0].size.offset;
-  partition.bytesPerSector = geometry.BytesPerSector;
-  partition.device = &device;*/
+  partition.bytesPerSector = geometry.BytesPerSector;*/
 
   ntfsVolume_t volume = { 0,0,0,0,0 };
 
 
-  if (ntfsOpenVolume(&device, partition1,&buffer, &volume) != DISK_SUCCESS)
+  if (ntfsOpenVolume(&device, partition,&buffer, &volume) != DISK_SUCCESS)
     return DISK_ERROR;
 
   uint8_t demo = 2;
@@ -438,60 +467,17 @@ diskReturn_t ReadDisk(LPCWSTR lpFileName)
       return listAttrDef(&volume);
 
     case 2:
-      break;
-      /*return listFiles(&volume);*/
+      return listFiles(&volume);
 
     case 3:
-      break;
-      /*return readFile(&volume);*/
+      return readFile(&volume);
 
     case 4:
       return dumpCluster(&volume,0xbcd3e);
+
+    case 5:
+      return listMFT(&volume);
   }
-
-  {
-    ntfsFileReference_t mftReference = {0,0,0};
-
-    uint8_t buff2[NTFS_BYTES_PER_SECTOR*8LL];
-    diskBuffer_t buffer2;
-
-    diskInitBuffer(&buffer2,&buff2[0],sizeof(buff2));
-
-    ntfsListFiles(&volume, NULL,  &buffer, &buffer2, &listFiles, (uint8_t*)(&mftReference));
-
-    if ((mftReference.SegmentNumberLowPart != 0) || (mftReference.SegmentNumberHighPart != 0))
-    {
-      ntfsFileHandle_t file;
-      file.mftRecord = mftReference;
-
-      
-  //    return ntfsListFiles(&volume, &file, &buffer, &buffer2,&listFiles, NULL);
-      /*uint16_t bytes[NTFS_BYTES_PER_SECTOR * 2 ];
-      diskBuffer_t buffer2;
-      
-      diskInitBuffer(&buffer2, (uint8_t*)&bytes[0],NTFS_BYTES_PER_SECTOR * 2);*/
-
-      
-      uint64_t slack = 0;
-      do {
-
-        if (ntfsReadFile(&volume,&file,&buffer,&buffer2,2,0,&slack) != DISK_SUCCESS)
-          { ntfsDebug(L"Reading clusters failed"); }
-
-        ntfsStrDump((uint16_t*)&(buffer2.bytes[0]),128);
-        ntfsStrDump(L"\n",1);
-      } while (!slack);
-    }
-  }
-
-
-//--------------------
-
-  /*ntfsGetRootFile(&file,&buffer);
-  ntfsNextFile(&file,0);*/
-
-  //ntfsListMFT(&device,&buffer,volume.lcnMFT, volume.bytesPerCluster, volume.volumeOffset);
-  //GetNTFSFile2(&device,&buffer,volume.lcnMFT, volume.bytesPerCluster, volume.volumeOffset);
 
   diskCloseDevice(&device);
 

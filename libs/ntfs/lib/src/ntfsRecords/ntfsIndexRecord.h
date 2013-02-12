@@ -9,8 +9,8 @@
  *   Thomas Schmid <schmid-thomas@gmx.net>
  */
 
-#ifndef _INC_NTFS_INDEX_RECORDS_H
-  #define _INC_NTFS_INDEX_RECORDS_H
+#ifndef NTFS_INDEX_RECORD_H_
+  #define NTFS_INDEX_RECORD_H_
 
   #include "disk/diskRecord/diskRecord.h"
   #include "./../ntfsIndexNodes/ntfsIndexNode.h"

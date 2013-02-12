@@ -1,13 +1,17 @@
 /*
- * ntfsBitmap.h
+ * The content of this file is licensed. You may obtain a copy of
+ * the license at https://github.com/thsmi/EmbeddedFileSystems/ or
+ * request it via email from the author.
  *
- *  Created on: 21.01.2013
- *      Author: admin
+ * Do not remove or change this comment.
+ *
+ * The initial author of the code is:
+ *   Thomas Schmid <schmid-thomas@gmx.net>
  */
 
-#ifndef NTFSBITMAP_H_
-#define NTFSBITMAP_H_
+#ifndef NTFS_BITMAP_ATTRIBUTE_H_
+  #define NTFS_BITMAP_ATTRIBUTE_H_
 
 
 
-#endif /* NTFSBITMAP_H_ */
+#endif

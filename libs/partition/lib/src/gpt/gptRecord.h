@@ -9,8 +9,8 @@
  *   Thomas Schmid <schmid-thomas@gmx.net>
  */
 
-#ifndef _INC_GTP_RECORD_H
-  #define _INC_GTP_RECORD_H
+#ifndef GTP_RECORD_H_
+  #define GTP_RECORD_H_
 
   #include "disk/diskRecord/diskRecord.h"
 

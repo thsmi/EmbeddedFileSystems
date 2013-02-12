@@ -1,6 +1,7 @@
 /*
- * The content of this file is licensed. You may obtain a copy of the license
- * at http://sourceforge.net/projects/ntfs/ or request it via email from the author.
+ * The content of this file is licensed. You may obtain a copy of
+ * the license at https://github.com/thsmi/EmbeddedFileSystems/ or
+ * request it via email from the author.
  *
  * Do not remove or change this comment.
  *
@@ -8,30 +9,17 @@
  *   Thomas Schmid <schmid-thomas@gmx.net>
  */
 
-#include "fat32BootRecord.h"
+#include "fat16BootRecord.h"
 
-diskReturn_t fat32ReadFSInfoRecord(diskDevice_t* hDevice, diskBuffer_t* buffer, fat32FSInfoRecord_t** record)
-{
-  if (diskReadRecord(hDevice, buffer, 1) != DISK_SUCCESS)
-    return DISK_ERROR_READ_RECORD;
-
-  (*record) = (fat32FSInfoRecord_t*)(buffer->bytes);
-
-  if ((*record)->endOfSector  != 0xAA55)
-    return DISK_ERROR_SIGNATURE_BOOT;
-
-  return DISK_SUCCESS;
-}
-
-diskReturn_t fat32ReadBootRecord(diskDevice_t* hDevice, diskBuffer_t* buffer, fat32BootRecord_t** record)
+diskReturn_t fat16ReadBootRecord(diskDevice_t* hDevice, diskBuffer_t* buffer, fat16BootRecord_t** record)
 {
   if (diskReadRecord(hDevice, buffer,1) != DISK_SUCCESS)
     return DISK_ERROR_READ_RECORD;
 
-  (*record) = (fat32BootRecord_t*)(buffer->bytes);
+  (*record) = (fat16BootRecord_t*)(buffer->bytes);
 
   
-  if ((*record)->endOfSector  != 0xAA55)
+  if ((*record)->endOfSector != 0xAA55)
     return DISK_ERROR_SIGNATURE_BOOT;
   
   // Are the clusters inconsistent?

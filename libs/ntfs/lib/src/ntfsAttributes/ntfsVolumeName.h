@@ -1,12 +1,16 @@
 /*
- * ntfsVolumeName.h
+ * The content of this file is licensed. You may obtain a copy of
+ * the license at https://github.com/thsmi/EmbeddedFileSystems/ or
+ * request it via email from the author.
  *
- *  Created on: 07.02.2013
- *      Author: admin
+ * Do not remove or change this comment.
+ *
+ * The initial author of the code is:
+ *   Thomas Schmid <schmid-thomas@gmx.net>
  */
 
-#ifndef NTFSVOLUMENAME_H_
-#define NTFSVOLUMENAME_H_
+#ifndef NTFS_VOLUMENAME_ATTRIBUTE_H_
+  #define NTFS_VOLUMENAME_ATTRIBUTE_H_
 
   #include "utils/diskUtils.h"
   #include "ntfsAttributes.h"
@@ -21,4 +25,4 @@
 
   diskReturn_t ntfsGetVolumeNameAttr(const ntfsAttrHdr_t* header, ntfsAttrVolumeName_t** VolumeName);
 
-#endif /* NTFSVOLUMENAME_H_ */
+#endif

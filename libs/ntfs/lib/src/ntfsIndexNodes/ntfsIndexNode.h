@@ -9,8 +9,8 @@
  *   Thomas Schmid <schmid-thomas@gmx.net>
  */
 
-#ifndef _INC_NTFS_INDEX_NODE
-  #define _INC_NTFS_INDEX_NODE
+#ifndef NTFS_INDEX_NODE_H_
+  #define NTFS_INDEX_NODE_H_
 
   #include "utils/diskUtils.h"
   #include "./../ntfsAttributes/ntfsFileName.h"

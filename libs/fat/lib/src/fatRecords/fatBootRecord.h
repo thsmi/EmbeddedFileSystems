@@ -1,6 +1,7 @@
 /*
- * The content of this file is licensed. You may obtain a copy of the license
- * at http://sourceforge.net/projects/ntfs/ or request it via email from the author.
+ * The content of this file is licensed. You may obtain a copy of
+ * the license at https://github.com/thsmi/EmbeddedFileSystems/ or
+ * request it via email from the author.
  *
  * Do not remove or change this comment.
  *
@@ -8,15 +9,15 @@
  *   Thomas Schmid <schmid-thomas@gmx.net>
  */
 
-#ifndef _INC_FAT_BOOT_RECORD_H
-  #define _INC_FAT_BOOT_RECORD_H
+#ifndef FAT_BOOT_RECORD_H_
+  #define FAT_BOOT_RECORD_H_
 
   #include "utils/diskUtils.h"
   
   #pragma pack(push, 1)
 
   typedef struct {
-    uint8_t jump[3]; //Jump& NOP instruction
+    /*0x00*/ uint8_t jump[3]; //Jump& NOP instruction
     /*0x03*/ uint64_t OEM_ID; // "MSDOS5.0"
     /*0x0B*/ uint16_t bytesPerSector; //usually 512
     /*0x0D*/ uint8_t  sectorsPerCluster;

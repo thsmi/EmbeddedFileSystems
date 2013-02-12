@@ -9,8 +9,8 @@
  *   Thomas Schmid <schmid-thomas@gmx.net>
  */
 
-#ifndef _INC_NTFS_DATARUNS_H
-  #define _INC_NTFS_DATARUNS_H
+#ifndef NTFS_DATA_RUNS_H_
+  #define NTFS_DATA_RUNS_H_
 
   #include "utils/diskUtils.h"
   #include "utils/diskStatus.h"

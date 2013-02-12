@@ -9,9 +9,9 @@
  *   Thomas Schmid <schmid-thomas@gmx.net>
  */
 
-#ifndef NTFSBITMAPFILE_H_
-#define NTFSBITMAPFILE_H_
+#ifndef NTFS_BITMAP_FILE_H_
+#define NTFS_BITMAP_FILE_H_
 
 
 
-#endif /* NTFSBITMAPFILE_H_ */
+#endif

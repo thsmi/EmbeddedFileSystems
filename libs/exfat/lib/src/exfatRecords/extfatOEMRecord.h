@@ -1,12 +1,16 @@
 /*
- * extfatOEMRecord.h
+ * The content of this file is licensed. You may obtain a copy of
+ * the license at https://github.com/thsmi/EmbeddedFileSystems/ or
+ * request it via email from the author.
  *
- *  Created on: 15.01.2013
- *      Author: admin
+ * Do not remove or change this comment.
+ *
+ * The initial author of the code is:
+ *   Thomas Schmid <schmid-thomas@gmx.net>
  */
 
-#ifndef EXTFATOEMRECORD_H_
-#define EXTFATOEMRECORD_H_
+#ifndef EXFAT_OEM_RECORD_H_
+  #define EXFAT_OEM_RECORD_H_
 
 
 /* OEM Parameter Record
@@ -40,12 +44,12 @@ UCHAR Reserved[4];
 FlashParameters;
 */
 
-typedef struct {
-  struct {
-    GUID guid;
-    uint8_t undefined[32]; // OEM Specified content
-  } parameter[10];
-  uint8_t reserved1;
-} exfatOEMRecord_t;
+  typedef struct {
+    struct {
+      GUID guid;
+      uint8_t undefined[32]; // OEM Specified content
+    } parameter[10];
+    uint8_t reserved1;
+  } exfatOEMRecord_t;
 
-#endif /* EXTFATOEMRECORD_H_ */
+#endif

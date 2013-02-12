@@ -9,14 +9,9 @@
  *   Thomas Schmid <schmid-thomas@gmx.net>
  */
 
-#ifndef NTFS_VOLUME_RECORD_H_
-  #define NTFS_VOLUME_RECORD_H_
+#ifndef FAT32_FAT_RECORD_H_
+  #define FAT32_FAT_RECORD_H_
 
-/*0x10  $STANDARD_INFORMATION
-0x30  $FILE_NAME  $Volume
-0x50  $SECURITY_DESCRIPTOR
-0x60  $VOLUME_NAME
-0x70  $VOLUME_INFORMATION
-0x80  $DATA   [Unnamed] length == 0*/
 
-#endif /* NTFS_VOLUME_RECORD_RECORD_H */
+
+#endif

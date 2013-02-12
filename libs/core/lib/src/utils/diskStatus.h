@@ -9,8 +9,8 @@
  *   Thomas Schmid <schmid-thomas@gmx.net>
  */
 
-#ifndef _INC_DISK_STATUS_H
-  #define _INC_DISK_STATUS_H
+#ifndef DISK_STATUS_H_
+  #define DISK_STATUS_H_
 
   typedef enum {
     DISK_SUCCESS,
